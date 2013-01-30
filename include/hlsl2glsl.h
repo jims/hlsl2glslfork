@@ -106,6 +106,22 @@ enum EAttribSemantic
 	EAttrSemVertexID,
 	EAttrSemInstanceID,
 	EAttrSemPrimitiveID,
+	EAttrSemSvTarget0,
+	EAttrSemSvTarget1,
+	EAttrSemSvTarget2,
+	EAttrSemSvTarget3,
+	EAttrSemSvTarget4,
+	EAttrSemSvTarget5,
+	EAttrSemSvTarget6,
+	EAttrSemSvTarget7,
+	EAttrSemSvTarget8,
+	EAttrSemSvTarget9,
+	EAttrSemSvTarget10,
+	EAttrSemSvTarget11,
+	EAttrSemSvTarget12,
+	EAttrSemSvTarget13,
+	EAttrSemSvTarget14,
+	EAttrSemSvTarget15,
 	EAttrSemCount
 };
 

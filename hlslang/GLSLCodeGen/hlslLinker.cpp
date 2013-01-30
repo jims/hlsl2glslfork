@@ -137,6 +137,25 @@ static const char resultString[EAttrSemCount][32] = {
 	"",
 	"gl_FragDepth",
 	"",
+	"",
+	"",
+	"",
+	"gl_FragData[0]",
+	"gl_FragData[1]",
+	"gl_FragData[2]",
+	"gl_FragData[3]",
+	"gl_FragData[4]",
+	"gl_FragData[5]",
+	"gl_FragData[6]",
+	"gl_FragData[7]",
+	"gl_FragData[8]",
+	"gl_FragData[9]",
+	"gl_FragData[10]",
+	"gl_FragData[11]",
+	"gl_FragData[12]",
+	"gl_FragData[13]",
+	"gl_FragData[14]",
+	"gl_FragData[15]"
 };
 
 static const char* kUserVaryingPrefix = "xlv_";
@@ -410,7 +429,23 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 	{ "depth", EAttrSemDepth },
 	{ "sv_vertexid", EAttrSemVertexID },
 	{ "sv_primitiveid", EAttrSemPrimitiveID },
-	{ "sv_instanceid", EAttrSemInstanceID }
+	{ "sv_instanceid", EAttrSemInstanceID },
+	{ "sv_target0", EAttrSemSvTarget0 },
+	{ "sv_target1", EAttrSemSvTarget1 },
+	{ "sv_target2", EAttrSemSvTarget2 },
+	{ "sv_target3", EAttrSemSvTarget3 },
+	{ "sv_target4", EAttrSemSvTarget4 },
+	{ "sv_target5", EAttrSemSvTarget5 },
+	{ "sv_target6", EAttrSemSvTarget6 },
+	{ "sv_target7", EAttrSemSvTarget7 },
+	{ "sv_target8", EAttrSemSvTarget8 },
+	{ "sv_target9", EAttrSemSvTarget9 },
+	{ "sv_target10", EAttrSemSvTarget10 },
+	{ "sv_target11", EAttrSemSvTarget11 },
+	{ "sv_target12", EAttrSemSvTarget12 },
+	{ "sv_target13", EAttrSemSvTarget13 },
+	{ "sv_target14", EAttrSemSvTarget14 },
+	{ "sv_target15", EAttrSemSvTarget15 }
 };
 
 // Determine the GLSL attribute semantic for a given HLSL semantic
