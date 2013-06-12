@@ -262,6 +262,15 @@ public:
    void setAllocator(TPoolAllocator* a) { allocator = *a; }
    TPoolAllocator& getAllocator() const { return allocator; }
 
+	// fix for vs2012 compiling issue
+   #if defined(_MSC_VER) && _MSC_VER >= 1700
+		pool_allocator & operator=(const pool_allocator &rhs)
+		{
+			//nothing to do
+			return *this;
+		}
+   #endif
+
 protected:
    TPoolAllocator& allocator;
 #endif

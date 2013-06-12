@@ -60,6 +60,14 @@ def configure_redist_zip(zip, zip_file_name)
 	zip.output_path = RedistDirName
 end
 
+# Returns a rake task that invokes the MSBuild 4.0/4.5 build system.
+MSBuild2012 = lambda do |rake_task_name, solution, solution_platform, config|
+	msbuild rake_task_name do |build|
+		configure_msbuild(build, solution, config, solution_platform)
+	end
+end
+
+
 # Returns a rake task that invokes the MSBuild 4.0 build system.
 MSBuild2010 = lambda do |rake_task_name, solution, solution_platform, config|
 	msbuild rake_task_name do |build|
@@ -106,6 +114,11 @@ Settings = {
 				:compiler => MSBuild2010,
 				:solution => "hlslang_vs2010.sln",
 				:zip_file => "hlsl2glsl_vc10",
+				:platform => :Win32 },
+			:vc11 => {
+				:compiler => MSBuild2012,
+				:solution => "hlslang_vs2012.sln",
+				:zip_file => "hlsl2glsl_vc11",
 				:platform => :Win32 } } }
 }
 
