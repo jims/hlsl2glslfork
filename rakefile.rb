@@ -36,7 +36,7 @@ def configure_msbuild(msbuild, solution, configuration, platform)
 end
 
 # Configures the supplied Albacore Output task.
-def configure_redist_dir(output, zip_file_name)
+def configure_redist_dir(output, zip_file_name, platform)
 	working_dir = File.join(RedistDirName, zip_file_name)
 	makedirs working_dir
 
@@ -44,8 +44,8 @@ def configure_redist_dir(output, zip_file_name)
 	output.to File.join(working_dir, zip_file_name)
 	
 	Configurations.each do |configuration|
-		output.file "lib/win32/#{configuration}/hlsl2glsl.lib"
-		output.file "build/#{configuration}/hlsl2glsl.pdb", :as => "lib/win32/#{configuration}/hlsl2glsl.pdb"
+		output.file "lib/#{platform}/#{configuration}/hlsl2glsl.lib"
+		output.file "build/#{configuration}/hlsl2glsl.pdb", :as => "lib/#{platform}/#{configuration}/hlsl2glsl.pdb"
 	end
 	
 	output.dir "include"
@@ -119,8 +119,26 @@ Settings = {
 				:compiler => MSBuild2012,
 				:solution => "hlslang_vs2012.sln",
 				:zip_file => "hlsl2glsl_vc11",
-				:platform => :Win32 } } }
-}
+				:platform => :Win32 } } },
+	:pc_x64 => {
+		:name => "PC_x64",
+		:vs_versions => {
+			:vc9 => {
+				:compiler => MSBuild2008,
+				:solution => "hlslang_vs2008.sln",
+				:zip_file => "hlsl2glsl_x64_vc9",
+				:platform => :x64 },
+			:vc10 => {
+				:compiler => MSBuild2010,
+				:solution => "hlslang_vs2010.sln",
+				:zip_file => "hlsl2glsl_x64_vc10",
+				:platform => :x64 },
+			:vc11 => {
+				:compiler => MSBuild2012,
+				:solution => "hlslang_vs2012.sln",
+				:zip_file => "hlsl2glsl_x64_vc11",
+				:platform => :x64 } } }
+			}
 
 Settings.each do |platform, platform_settings|
 	platform_name = platform_settings[:name]      # => "PC"
@@ -153,7 +171,7 @@ Settings.each do |platform, platform_settings|
 		namespace "just:make_redist_dir" do
 			desc "Just prepare #{platform_name} package for #{vs_version_name}"
 			output rake_task_name do |output|
-				configure_redist_dir(output, zip_file)
+				configure_redist_dir(output, zip_file, vs_settings[:platform])
 			end
 		end
 
