@@ -18,8 +18,7 @@ task :default do sh %{rake --describe} end
 RedistDirName = "redist"
 
 BitsquidRevision="r7"
-def product(settings, vs_version)
-	platform = settings[:platform].to_s.downcase
+def product(platform, vs_version)
 	return "hlsl2glsl-#{platform}-#{vs_version}-#{BitsquidRevision}"
 end
 
@@ -30,13 +29,13 @@ end
 # Configures the supplied Albacore MSBuild task.
 def configure_msbuild(msbuild, solution, configuration, platform)
 	# We must do a clean rebuild, since the output directories are the same for both VC9 and VC10 solutions.
-	msbuild.targets = [:Rebuild]
+	msbuild.targets = [:Build]
 	msbuild.properties = { :Configuration => configuration, :Platform => platform }
 	msbuild.solution = solution
 end
 
 # Configures the supplied Albacore Output task.
-def configure_redist_dir(output, zip_file_name, platform)
+def configure_redist_dir(output, zip_file_name, platforms, compiler)
 	working_dir = File.join(RedistDirName, zip_file_name)
 	makedirs working_dir
 
@@ -44,8 +43,10 @@ def configure_redist_dir(output, zip_file_name, platform)
 	output.to File.join(working_dir, zip_file_name)
 	
 	Configurations.each do |configuration|
-		output.file "lib/#{platform}/#{configuration}/hlsl2glsl.lib"
-		output.file "build/#{configuration}/hlsl2glsl.pdb", :as => "lib/#{platform}/#{configuration}/hlsl2glsl.pdb"
+		for platform in platforms
+			output.file "lib/#{platform}/#{configuration}/hlsl2glsl.lib"
+			output.file "build/#{compiler}/#{platform}/#{configuration}/hlsl2glsl.pdb", :as => "lib/#{platform}/#{configuration}/hlsl2glsl.pdb"
+		end
 	end
 	
 	output.dir "include"
@@ -102,46 +103,22 @@ end
 Configurations = %w{ Debug Release }
 
 Settings = {
-	:pc => {
-		:name => "PC",
+	:windows => {
+		:name => "Windows",
 		:vs_versions => {
-			:vc9 => {
-				:compiler => MSBuild2008,
-				:solution => "hlslang_vs2008.sln",
-				:zip_file => "hlsl2glsl_vc9",
-				:platform => :Win32 },
 			:vc10 => {
 				:compiler => MSBuild2010,
 				:solution => "hlslang_vs2010.sln",
 				:zip_file => "hlsl2glsl_vc10",
-				:platform => :Win32 },
+				:platforms => [ :Win32, :x64 ] },
 			:vc11 => {
 				:compiler => MSBuild2012,
 				:solution => "hlslang_vs2012.sln",
 				:zip_file => "hlsl2glsl_vc11",
-				:platform => :Win32 } } },
-	:pc_x64 => {
-		:name => "PC_x64",
-		:vs_versions => {
-			:vc9 => {
-				:compiler => MSBuild2008,
-				:solution => "hlslang_vs2008.sln",
-				:zip_file => "hlsl2glsl_x64_vc9",
-				:platform => :x64 },
-			:vc10 => {
-				:compiler => MSBuild2010,
-				:solution => "hlslang_vs2010.sln",
-				:zip_file => "hlsl2glsl_x64_vc10",
-				:platform => :x64 },
-			:vc11 => {
-				:compiler => MSBuild2012,
-				:solution => "hlslang_vs2012.sln",
-				:zip_file => "hlsl2glsl_x64_vc11",
-				:platform => :x64 } } }
-			}
+				:platforms => [ :Win32, :x64 ] } } } }
 
 Settings.each do |platform, platform_settings|
-	platform_name = platform_settings[:name]      # => "PC"
+	platform_name = platform_settings[:name]      # => "Windows"
 	vs_versions = platform_settings[:vs_versions] # => [:vc9, :vc10]
 	
 
@@ -152,16 +129,21 @@ Settings.each do |platform, platform_settings|
 	vs_versions.each do |vs_version, vs_settings|
 		vs_version_name = vs_version.to_s.upcase
 		rake_task_name = "#{platform}_#{vs_version}" # => "pc_vc10"
-		zip_file = product(vs_settings, vs_version)            # => "hlsl2glsl-vc10-win32-r2"
+		zip_file = product(platform, vs_version)            # => "hlsl2glsl-vc11-windows-r2"
 
 		namespace "just:build" do
 			compiler = vs_settings[:compiler]          # => <Proc>
 			solution = vs_settings[:solution]          # => "hlslang_vc2010.sln"
-			solution_platform = vs_settings[:platform] # => "Win32"
+			solution_platforms = vs_settings[:platforms] # =>  [ :Win32, :x64 ]
 
 			Configurations.each do |config|
-				desc "Just build #{config} #{platform_name} libs for #{vs_version_name}"
-				compiler.call("#{platform}_#{vs_version}_#{config}", solution, solution_platform, config)
+				for solution_platform in solution_platforms
+					desc "Just build #{config} #{platform_name} libs for #{vs_version_name} #{solution_platform}"
+					compiler.call("#{platform}_#{vs_version}_#{config}_#{solution_platform}", solution, solution_platform, config)
+				end
+
+				desc "Just build #{config} #{platform_name} libs for #{vs_version_name} #{solution_platform}"
+				task "#{platform}_#{vs_version}_#{config}" => solution_platforms.map { |solution_platform| "#{platform}_#{vs_version}_#{config}_#{solution_platform}" }
 			end
 
 			desc "Just build all #{platform_name} libs for #{vs_version_name}"
@@ -171,7 +153,7 @@ Settings.each do |platform, platform_settings|
 		namespace "just:make_redist_dir" do
 			desc "Just prepare #{platform_name} package for #{vs_version_name}"
 			output rake_task_name do |output|
-				configure_redist_dir(output, zip_file, vs_settings[:platform])
+				configure_redist_dir(output, zip_file, vs_settings[:platforms], vs_version)
 			end
 		end
 
