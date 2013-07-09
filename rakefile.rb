@@ -101,6 +101,10 @@ end
 # --------------------------------------------------
 
 Configurations = %w{ Debug Release }
+WindowsArchs = [
+	{ :compiler_config => :Win32, :output_folder_name => :w32, :name => "32bit" },
+	{ :compiler_config => :x64, :output_folder_name => :w64, :name => "64bit" }
+]
 
 Settings = {
 	:windows => {
@@ -110,12 +114,12 @@ Settings = {
 				:compiler => MSBuild2010,
 				:solution => "hlslang_vs2010.sln",
 				:zip_file => "hlsl2glsl_vc10",
-				:platforms => [ :Win32, :x64 ] },
+				:platforms => WindowsArchs },
 			:vc11 => {
 				:compiler => MSBuild2012,
 				:solution => "hlslang_vs2012.sln",
 				:zip_file => "hlsl2glsl_vc11",
-				:platforms => [ :Win32, :x64 ] } } } }
+				:platforms => WindowsArchs } } } }
 
 Settings.each do |platform, platform_settings|
 	platform_name = platform_settings[:name]      # => "Windows"
@@ -138,12 +142,12 @@ Settings.each do |platform, platform_settings|
 
 			Configurations.each do |config|
 				for solution_platform in solution_platforms
-					desc "Just build #{config} #{platform_name} libs for #{vs_version_name} #{solution_platform}"
-					compiler.call("#{platform}_#{vs_version}_#{config}_#{solution_platform}", solution, solution_platform, config)
+					desc "Just build #{config} #{platform_name} libs for #{vs_version_name} #{solution_platform[:name]}"
+					compiler.call("#{platform}_#{vs_version}_#{config}_#{solution_platform[:name]}", solution, solution_platform[:compiler_config], config)
 				end
 
-				desc "Just build #{config} #{platform_name} libs for #{vs_version_name} #{solution_platform}"
-				task "#{platform}_#{vs_version}_#{config}" => solution_platforms.map { |solution_platform| "#{platform}_#{vs_version}_#{config}_#{solution_platform}" }
+				desc "Just build #{config} #{platform_name} libs for #{vs_version_name}"
+				task "#{platform}_#{vs_version}_#{config}" => solution_platforms.map { |solution_platform| "#{platform}_#{vs_version}_#{config}_#{solution_platform[:name]}" }
 			end
 
 			desc "Just build all #{platform_name} libs for #{vs_version_name}"
@@ -153,7 +157,7 @@ Settings.each do |platform, platform_settings|
 		namespace "just:make_redist_dir" do
 			desc "Just prepare #{platform_name} package for #{vs_version_name}"
 			output rake_task_name do |output|
-				configure_redist_dir(output, zip_file, vs_settings[:platforms], vs_version)
+				configure_redist_dir(output, zip_file, vs_settings[:platforms].map { |p| p[:output_folder_name] }, vs_version)
 			end
 		end
 

@@ -69,18 +69,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lib/$(Platform)/$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">build/vc11/$(Platform)/$(Configuration)</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lib/$(Platform)/$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">build/vc11/$(Platform)/$(Configuration)</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">lib/w32/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">build/vc11/w32/$(Configuration)</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">lib/w32/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">build/vc11/w32/$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>lib/$(Platform)/$(Configuration)\</OutDir>
-    <IntDir>build/vc11/$(Platform)/$(Configuration)</IntDir>
+    <OutDir>lib/w64/$(Configuration)\</OutDir>
+    <IntDir>build/vc11/w64/$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>lib/$(Platform)/$(Configuration)\</OutDir>
-    <IntDir>build/vc11/$(Platform)/$(Configuration)</IntDir>
+    <OutDir>lib/w64/$(Configuration)\</OutDir>
+    <IntDir>build/vc11/w64/$(Configuration)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
